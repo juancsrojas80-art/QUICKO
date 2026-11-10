@@ -113,9 +113,6 @@ La interfaz fue evaluada con las 10 heurísticas de usabilidad de Nielsen. Los m
 ## 💻 Tecnologías
 
 - **Base de datos:** SQL SERVER
-- **Frontend:** _completar_
-- **Backend:** _completar_
-
 
 ## 📍 Estado del proyecto
 
