@@ -139,9 +139,3 @@ mysql -u root -p < database/quicko.sql
 - Javier Steven Ariza Peñuela
 - Juan Daniel Polanco Barrera
 - Andrés Camilo Campos Osorio
-
-Proyecto de la asignatura **Interfaz Hombre Máquina**, Universidad San Buenaventura, sede Bogotá.
-
-## 📄 Licencia
-
-_Completar (por ejemplo, MIT)._
