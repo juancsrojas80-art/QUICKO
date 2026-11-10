@@ -1,0 +1,193 @@
+/*
+   Integrantes:
+   Javier Ariza
+   Juan Polanco
+   Juan Carvajal
+   Andres Campos
+*/
+
+-- ==========================================
+-- CREACION DE LA BASE DE DATOS
+-- ==========================================
+
+USE master;
+GO
+
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'QUICKOUSB')
+BEGIN
+    ALTER DATABASE QUICKOUSB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE QUICKOUSB;
+END;
+GO
+
+CREATE DATABASE QUICKOUSB;
+GO
+
+USE QUICKOUSB;
+GO
+
+-- ==========================================
+-- TABLA CLIENTE
+-- ==========================================
+
+CREATE TABLE CLIENTE (
+    IdCliente     INT IDENTITY(1,1) NOT NULL,
+    Apellido      VARCHAR(50)      NOT NULL,
+    Nombre        VARCHAR(50)      NOT NULL,
+    Correo        VARCHAR(350)     NOT NULL,
+    Telefono      CHAR(10)         NOT NULL,
+    Contrasena    VARCHAR(350)     NOT NULL,
+    Localidad     VARCHAR(30)      NOT NULL,
+    Direccion     VARCHAR(100)     NOT NULL,
+    FechaRegistro DATE             NOT NULL,
+
+    CONSTRAINT PK_CLIENTE PRIMARY KEY (IdCliente),
+    CONSTRAINT UQ_CLIENTE_Correo UNIQUE (Correo)
+);
+GO
+
+-- ==========================================
+-- TABLA TRABAJADOR
+-- ==========================================
+
+CREATE TABLE TRABAJADOR (
+    IdTrabajador           INT IDENTITY(1,1) NOT NULL,
+    Apellido               VARCHAR(50)      NOT NULL,
+    Nombre                 VARCHAR(50)      NOT NULL,
+    Correo                 VARCHAR(350)     NOT NULL,
+    Telefono               CHAR(10)         NOT NULL,
+    Contrasena             VARCHAR(350)     NOT NULL,
+    TipoDocumento          VARCHAR(2)       NOT NULL,
+    NumeroDocumento        CHAR(10)         NOT NULL,
+    FechaNacimiento        DATE             NOT NULL,
+    Localidad              VARCHAR(30)      NULL,
+    DescripcionExperiencia VARCHAR(350)     NOT NULL,
+    Disponible             BIT              NOT NULL DEFAULT 1,
+    FechaRegistro          DATE             NOT NULL,
+
+    CONSTRAINT PK_TRABAJADOR PRIMARY KEY (IdTrabajador),
+    CONSTRAINT UQ_TRABAJADOR_Correo UNIQUE (Correo),
+    CONSTRAINT UQ_TRABAJADOR_Documento
+        UNIQUE (TipoDocumento, NumeroDocumento),
+
+    CONSTRAINT CK_TRABAJADOR_TipoDocumento
+        CHECK (TipoDocumento IN ('CC', 'CE'))
+);
+GO
+
+-- ==========================================
+-- TABLA CATEGORIA
+-- ==========================================
+
+CREATE TABLE CATEGORIA (
+    IdCategoria INT IDENTITY(1,1) NOT NULL,
+    Nombre      VARCHAR(50)      NOT NULL,
+    Descripcion VARCHAR(200)     NULL,
+
+    CONSTRAINT PK_CATEGORIA PRIMARY KEY (IdCategoria),
+    CONSTRAINT UQ_CATEGORIA_Nombre UNIQUE (Nombre)
+);
+GO
+
+-- ==========================================
+-- TABLA TrabajadorCategoria
+-- ==========================================
+
+CREATE TABLE TrabajadorCategoria (
+    IdTrabajador INT NOT NULL,
+    IdCategoria  INT NOT NULL,
+
+    CONSTRAINT PK_TrabajadorCategoria
+        PRIMARY KEY (IdTrabajador, IdCategoria),
+
+    CONSTRAINT FK_TC_Trabajador
+        FOREIGN KEY (IdTrabajador)
+        REFERENCES TRABAJADOR (IdTrabajador)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_TC_Categoria
+        FOREIGN KEY (IdCategoria)
+        REFERENCES CATEGORIA (IdCategoria)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+GO
+
+-- ==========================================
+-- TABLA SOLICITUD
+-- ==========================================
+
+CREATE TABLE SOLICITUD (
+    IdSolicitud         INT IDENTITY(1,1) NOT NULL,
+    IdCliente           INT              NOT NULL,
+    IdTrabajador        INT              NOT NULL,
+    IdCategoria         INT              NOT NULL,
+    DescripcionProblema VARCHAR(200)     NOT NULL,
+    DireccionServicio   VARCHAR(100)     NOT NULL,
+    FechaSolicitud      DATE             NOT NULL,
+    FechaProgramada     DATE             NOT NULL,
+    Estado              VARCHAR(20)      NOT NULL DEFAULT 'Pendiente',
+
+    CONSTRAINT PK_SOLICITUD PRIMARY KEY (IdSolicitud),
+
+    CONSTRAINT CK_SOLICITUD_Estado
+        CHECK (Estado IN (
+            'Pendiente',
+            'Aceptada',
+            'Rechazada',
+            'Finalizada',
+            'Cancelada'
+        )),
+
+    CONSTRAINT FK_SOL_Cliente
+        FOREIGN KEY (IdCliente)
+        REFERENCES CLIENTE (IdCliente)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION,
+
+    CONSTRAINT FK_SOL_Trabajador
+        FOREIGN KEY (IdTrabajador)
+        REFERENCES TRABAJADOR (IdTrabajador)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION,
+
+    CONSTRAINT FK_SOL_Categoria
+        FOREIGN KEY (IdCategoria)
+        REFERENCES CATEGORIA (IdCategoria)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION
+);
+GO
+
+-- ==========================================
+-- TABLA CALIFICACION
+-- ==========================================
+
+CREATE TABLE CALIFICACION (
+    IdCalificacion    INT IDENTITY(1,1) NOT NULL,
+    IdSolicitud       INT              NOT NULL,
+    Puntuacion        DECIMAL(2,1)      NOT NULL,
+    Comentario        VARCHAR(350)     NOT NULL,
+    FechaCalificacion DATE             NULL,
+
+    CONSTRAINT PK_CALIFICACION
+        PRIMARY KEY (IdCalificacion),
+
+    CONSTRAINT UQ_CALIFICACION_Solicitud
+        UNIQUE (IdSolicitud),
+
+    CONSTRAINT CK_CALIFICACION_Puntuacion
+        CHECK (Puntuacion BETWEEN 0 AND 5),
+
+    CONSTRAINT FK_CAL_Solicitud
+        FOREIGN KEY (IdSolicitud)
+        REFERENCES SOLICITUD (IdSolicitud)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+GO
+
+-- ==========================================
+-- FIN DE LA BASE DE DATOS QUICKOUSB
+-- ==========================================
