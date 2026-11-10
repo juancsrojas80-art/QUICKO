@@ -112,22 +112,10 @@ La interfaz fue evaluada con las 10 heurísticas de usabilidad de Nielsen. Los m
 
 ## 💻 Tecnologías
 
-- **Base de datos:** MySQL
+- **Base de datos:** SQL SERVER
 - **Frontend:** _completar_
 - **Backend:** _completar_
 
-## 🚀 Instalación
-
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/TU-USUARIO/quicko.git
-
-# 2. Entrar a la carpeta del proyecto
-cd quicko
-
-# 3. Importar la base de datos en MySQL (completar con el nombre de tu archivo)
-mysql -u root -p < database/quicko.sql
-```
 
 ## 📍 Estado del proyecto
 
